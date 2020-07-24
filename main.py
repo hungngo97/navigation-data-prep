@@ -1,4 +1,9 @@
 import json
+import csv
+
+sensorsMap = {}
+payloads_metadata = {}
+
 with open('log.txt', 'r') as myfile:
     data = myfile.read()
     
@@ -7,7 +12,6 @@ with open('log.txt', 'r') as myfile:
 
     # Get sensor sampling rate
     samplingRates = payloads[-1].split("\n")
-    sensorsMap = {}
 
     for samplingRate in samplingRates:
         words = samplingRate.split(" ")
@@ -30,7 +34,6 @@ with open('log.txt', 'r') as myfile:
     
     # Get time of each sensor sample
     counter = 0
-    payloads_metadata = {}
     for i in range(1, len(payloads) - 1):
         payload = payloads[i]
         sensors_payload = payload.split("\n\n")
@@ -67,6 +70,21 @@ with open('log.txt', 'r') as myfile:
             if len(timestamps_metadata) > 1:
                 sensor_name = timestamps_metadata[1]['sensor_name']
                 payloads_metadata[i][sensor_name] = timestamps_metadata
+
+with open('sensorsMap.csv', 'wb') as csv_file:  # Just use 'w' mode in 3.x
+    writer = csv.writer(csv_file)
+    for key, value in sensorsMap.items():
+        row = [key]
+        for field, data in value.items():
+            row.append(data)
+        writer.writerow(row)
+
+with open('payload_metadata.json', 'w+') as f:
+    # this would place the entire output on one line
+    # use json.dump(lista_items, f, indent=4) to "pretty-print" with four spaces per indent
+    json.dump(payloads_metadata, f, indent=4)
+
+
 
     
 
