@@ -1,5 +1,7 @@
 import json
 import csv
+from collections import defaultdict
+
 
 sensorsMap = {}
 payloads_metadata = {}
@@ -33,7 +35,7 @@ with open('log.txt', 'r') as myfile:
             print(sensor, sensorsMap[sensor])
     
     # Get time of each sensor sample
-    counter = 0
+    sensor_counter = defaultdict(int)
     for i in range(1, len(payloads) - 1):
         payload = payloads[i]
         sensors_payload = payload.split("\n\n")
@@ -60,12 +62,12 @@ with open('log.txt', 'r') as myfile:
                     z_value = float(z_value[:z_value.find(",")])
 
 
-                    sensor_metadata["timestamp"] = float(sensorsMap[sensor_name]['start_time']) + (1/sensorsMap[sensor_name]['hz']) * counter
+                    sensor_metadata["timestamp"] = float(sensorsMap[sensor_name]['start_time']) + (1/sensorsMap[sensor_name]['hz']) * sensor_counter[sensor_name]
                     sensor_metadata["sensor_name"] = sensor_name
                     sensor_metadata["x_value"] = x_value
                     sensor_metadata["y_value"] = y_value
                     sensor_metadata["z_value"] = z_value
-                    counter += 1
+                    sensor_counter[sensor_name] += 1
                     timestamps_metadata.append(sensor_metadata)
                 elif len(sentence.split(" ")) == 3:
                     # SHUT sensors sample
@@ -73,9 +75,10 @@ with open('log.txt', 'r') as myfile:
                     sensor_name = words[0]
                     x_value = words[1]
                     x_value = float(x_value[:x_value.find(",")])
-                    sensor_metadata["timestamp"] = float(sensorsMap[sensor_name]['start_time']) + (1/sensorsMap[sensor_name]['hz']) * counter
+                    sensor_metadata["timestamp"] = float(sensorsMap[sensor_name]['start_time']) + (1/sensorsMap[sensor_name]['hz']) * sensor_counter[sensor_name]
                     sensor_metadata["sensor_name"] = sensor_name
                     sensor_metadata["x_value"] = x_value
+                    sensor_counter[sensor_name] += 1
                     timestamps_metadata.append(sensor_metadata)
 
             if len(timestamps_metadata) > 1:
