@@ -48,6 +48,7 @@ with open('log.txt', 'r') as myfile:
                     sensor_metadata["start_time"] = sentence.split(" ")[3]
                     sensor_metadata["end_time"] = sentence.split(" ")[4]
                 elif len(sentence.split(" ")) == 5:
+                    # ACCL & GYRO
                     words = sentence.split(" ")
                     sensor_name = words[0]
                     x_value = words[1]
@@ -65,6 +66,16 @@ with open('log.txt', 'r') as myfile:
                     sensor_metadata["y_value"] = y_value
                     sensor_metadata["z_value"] = z_value
                     counter += 1
+                    timestamps_metadata.append(sensor_metadata)
+                elif len(sentence.split(" ")) == 3:
+                    # SHUT sensors sample
+                    words = sentence.split(" ")
+                    sensor_name = words[0]
+                    x_value = words[1]
+                    x_value = float(x_value[:x_value.find(",")])
+                    sensor_metadata["timestamp"] = float(sensorsMap[sensor_name]['start_time']) + (1/sensorsMap[sensor_name]['hz']) * counter
+                    sensor_metadata["sensor_name"] = sensor_name
+                    sensor_metadata["x_value"] = x_value
                     timestamps_metadata.append(sensor_metadata)
 
             if len(timestamps_metadata) > 1:
