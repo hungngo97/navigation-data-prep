@@ -128,6 +128,23 @@ with open('imu.csv', 'w') as imu_csv:
             ]
             imu_writer.writerow(row_values)
 
+with open('shut_frame.csv', 'w') as shut_csv:
+    shut_writer = csv.writer(shut_csv, delimiter=' ',
+                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    for i in range(1, len(raw_payloads) - 1):
+        sensors_map = payloads_metadata[i]
+        shut_samples = sensors_map['SHUT']
+        row_values = []
+
+        # TODO: Currently the GYRO frequency is 2x ACCL frequency, so index 1 of ACCL is GYRO of index 2
+        for shut_index in range(len(shut_samples)):
+            shut_value = shut_samples[shut_index]
+            row_values = [
+                shut_value['timestamp'],
+                shut_value['x_value']
+            ]
+            shut_writer.writerow(row_values)
+
 
 
             
